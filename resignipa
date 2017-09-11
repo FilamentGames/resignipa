@@ -84,6 +84,8 @@ wdir=$(cd $wdir; pwd;)
 #abort on error
 set -e
 
+echo "Deleting old $package...";
+rm -rf "$package";
 
 echo "Extracting package $ipa...";
 unzip "$ipa" -d "$package";
