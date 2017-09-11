@@ -144,7 +144,7 @@ fi
 
 
 echo "Re sign $app...";
-/usr/bin/codesign -f -s "$codesignIdentity" --resource-rules "$app/ResourceRules.plist" "$app";
+/usr/bin/codesign -f -s "$codesignIdentity" "$app";
 
 echo "Re archving app $app to $name_resigned.ipa...";
 cd "$package"; #not sure how to STOP inculding parent folders in the zip path, so cd into the folder first
