@@ -4,6 +4,7 @@ function usage {
     echo "usage: resignipa [-i ipa -p  profile -c codesignIdentity [ -v bundleVersion | -b bundleId | -n bundleDisplayName | -k keyValuePairs  | -l plist | -o outfile]] | [-h]"
     echo "   ";
     echo "  -i | --ipa                  : The path to the original ipa file to be resigned";
+	echo "  -t | --team                 : The new team id";
     echo "  -p | --profile              : The path to the provisioning profile";
     echo "  -c | --codesignIdentity     : The identiy/name of the signing certifiate installed in keychain";
     echo "  -v | --bundleVersion        : Optional, A verison to assign to CFBundleVersion";
@@ -24,6 +25,9 @@ while [ "$1" != "" ]; do
     case "$1" in
         -i | --ipa )                shift
                                     ipa="$1"
+                                    ;;
+        -t | --team )            	shift
+                                    team="$1"
                                     ;;
         -p | --profile )            shift
                                     profile="$1"
@@ -59,7 +63,7 @@ while [ "$1" != "" ]; do
 done
 
 
-if [[ -z "$ipa" || -z "$profile" || -z "$codesignIdentity" ]]; then
+if [[ -z "$ipa" || -z "$team" || -z "$profile" || -z "$codesignIdentity" ]]; then
     usage
     exit;
 fi
@@ -99,6 +103,7 @@ echo "Adding new profile to $app...";
 cp "$profile" "$app/embedded.mobileprovision";
 
 buildPlist="$app/$plist";
+buildEntitlements="$app/archived-expanded-entitlements.xcent";
 
 if [[ -z $bundleVersion ]]; then
    echo "Keeping existing version number...";
@@ -113,6 +118,7 @@ if [[ -z $bundleId ]]; then
 else
     echo "Update bundle id to $bundleId..";
     /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $bundleId" "$buildPlist";
+	/usr/libexec/Plistbuddy -c "Set :application-identifier $team.$bundleId" "$buildEntitlements";
 fi
 
 if [[ -z $bundleDisplayName ]]; then
@@ -146,7 +152,7 @@ fi
 
 
 echo "Re sign $app...";
-/usr/bin/codesign -f --entitlements "$app/archived-expanded-entitlements.xcent" -s "$codesignIdentity" "$app";
+/usr/bin/codesign -f --entitlements "$buildEntitlements" -s "$codesignIdentity" "$app";
 
 echo "Re archving app $app to $name_resigned.ipa...";
 cd "$package"; #not sure how to STOP inculding parent folders in the zip path, so cd into the folder first
