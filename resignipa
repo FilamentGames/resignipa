@@ -119,6 +119,7 @@ else
     echo "Update bundle id to $bundleId..";
     /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier $bundleId" "$buildPlist";
 	/usr/libexec/Plistbuddy -c "Set :application-identifier $team.$bundleId" "$buildEntitlements";
+	/usr/libexec/Plistbuddy -c "Set :keychain-access-groups:0 $team.$bundleId" "$buildEntitlements";
 fi
 
 if [[ -z $bundleDisplayName ]]; then
