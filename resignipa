@@ -146,7 +146,7 @@ fi
 
 
 echo "Re sign $app...";
-/usr/bin/codesign -f -s "$codesignIdentity" "$app";
+/usr/bin/codesign -f --entitlements "$app/archived-expanded-entitlements.xcent" -s "$codesignIdentity" "$app";
 
 echo "Re archving app $app to $name_resigned.ipa...";
 cd "$package"; #not sure how to STOP inculding parent folders in the zip path, so cd into the folder first
